@@ -164,10 +164,49 @@ const updateDoctorProfile = async (req, res) => {
   }
 };
 
+const getDoctors = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('doctor_profiles')
+      .select(`
+        id,
+        license_number,
+        specialization,
+        bio,
+        available_slots,
+        users (
+          id,
+          full_name,
+          email
+        )
+      `);
+
+    if (error) {
+      console.error('Fetch doctors error:', error);
+      return res.status(500).json({ error: 'Failed to fetch doctors' });
+    }
+    const doctors = data.map((item) => ({
+      id: item.users.id,
+      name: item.users.full_name,
+      email: item.users.email,
+      specialization: item.specialization,
+    }));
+
+
+    res.json({
+      data: doctors
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAssignedPatients,
   getPatientDetails,
   getProfile,
+  getDoctors,
   createDoctorProfile,
   updateDoctorProfile
 };

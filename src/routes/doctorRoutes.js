@@ -4,6 +4,8 @@ const doctorController = require('../controllers/doctorController');
 const { authorizeRole } = require('../middleware/authMiddleware');
 
 // Get assigned patients
+router.get('/', doctorController.getDoctors);
+
 router.get('/patients', authorizeRole(['doctor']), doctorController.getAssignedPatients);
 
 // Get patient details
@@ -17,5 +19,6 @@ router.post('/profile', authorizeRole(['doctor']), doctorController.createDoctor
 
 // Update doctor profile
 router.put('/profile', authorizeRole(['doctor']), doctorController.updateDoctorProfile);
+
 
 module.exports = router;
