@@ -4,12 +4,21 @@ const getAssignedPatients = async (req, res) => {
   try {
     const doctorId = req.user.id;
 
-    const { data: patients, error } = await supabase
-      .from('patient_doctor_assignments')
-      .select('*, patient:patient_doctor_assignments_patient_id_fkey(id, email, full_name), patient_profile:patient_profiles(*)')
-      .eq('doctor_id', doctorId);
+   const { data: patients, error } = await supabase
+  .from('patient_doctor_assignments')
+  .select(`
+    *,
+    patient:users!patient_doctor_assignments_patient_id_fkey (
+      id,
+      email,
+      full_name,
+      patient_profile:patient_profiles (*)
+    )
+  `)
+  .eq('doctor_id', doctorId);
 
     if (error) {
+      console.error('Fetch assigned patients error:', error);
       return res.status(500).json({ error: 'Failed to fetch patients' });
     }
 
@@ -79,6 +88,7 @@ const getProfile = async (req, res) => {
 const createDoctorProfile = async (req, res) => {
   try {
     const doctorId = req.user.id;
+    console.log('Received create profile request for doctor ID:', doctorId);
     const { licenseNumber, specialization, bio, availableSlots } = req.body;
 
     // Validate input
@@ -94,6 +104,8 @@ const createDoctorProfile = async (req, res) => {
       .select('id')
       .eq('user_id', doctorId)
       .maybeSingle();
+
+      console.log('Existing profile check result:', existingProfile);
 
     if (existingProfile) {
       return res.status(409).json({
@@ -134,8 +146,9 @@ const createDoctorProfile = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
   try {
     const doctorId = req.user.id;
+    console.log('Received update profile request for doctor ID:', doctorId);
     const { licenseNumber, specialization, bio, availableSlots } = req.body;
-
+    console.log('Updating profile with data:', { licenseNumber, specialization, bio, availableSlots });
     const { data: profile, error } = await supabase
       .from('doctor_profiles')
       .update({
