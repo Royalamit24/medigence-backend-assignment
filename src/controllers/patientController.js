@@ -172,10 +172,10 @@ const submitOnboarding = async (req, res) => {
         doctor_id: insuranceDetails.preferredDoctorId,
         created_at: new Date(),
       })
-      .onConflict('id')
-      .ignore();
+      .select();
 
-    if (roomError && !roomError.message.includes('conflict')) {
+    // Ignore if room already exists (conflict error is okay)
+    if (roomError && !roomError.message.includes('duplicate')) {
       console.error('Room creation error:', roomError);
       // Continue - room creation failure is not fatal
     }
@@ -242,11 +242,7 @@ const getAssignedDoctor = async (req, res) => {
         id,
         doctor_id,
         assigned_at,
-        doctor:users(
-          id,
-          email,
-          full_name
-        )
+        doctor:patient_doctor_assignments_doctor_id_fkey(id, email, full_name)
       `
       )
       .eq('patient_id', patientId)

@@ -64,11 +64,12 @@ const validatePersonalInfo = (data) => {
 
 // STEP 2: MEDICAL HISTORY
 const validateMedicalHistory = (data) => {
+    console.log('Validating medical history with data:', data);
   const errors = {};
 
   // Blood Type - Required dropdown
   const validBloodTypes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-', 'unknown'];
-  if (!data.bloodType || !validBloodTypes.includes(data.bloodType.toLowerCase())) {
+  if (!data.bloodType || !validBloodTypes.includes(data.bloodType.toUpperCase())) {
     errors.bloodType = 'Valid blood type is required';
   }
 
@@ -155,9 +156,12 @@ const validateInsuranceDetails = (data) => {
     errors.policyHolderName = 'Policy holder name must be at least 2 characters';
   }
 
-  // Preferred Doctor - Required
+  // Preferred Doctor - Required and must be valid UUID
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!data.preferredDoctorId || typeof data.preferredDoctorId !== 'string') {
     errors.preferredDoctorId = 'Preferred doctor is required';
+  } else if (!uuidRegex.test(data.preferredDoctorId)) {
+    errors.preferredDoctorId = 'Invalid doctor ID format (must be valid UUID)';
   }
 
   // Preferred Time Slot - Required

@@ -12,4 +12,10 @@ router.get('/patients/:patientId', authorizeRole(['doctor']), doctorController.g
 // Get doctor profile
 router.get('/profile', authorizeRole(['doctor']), doctorController.getProfile);
 
+// Create doctor profile (after signup)
+router.post('/profile', authorizeRole(['doctor']), doctorController.createDoctorProfile);
+
+// Update doctor profile
+router.put('/profile', authorizeRole(['doctor']), doctorController.updateDoctorProfile);
+
 module.exports = router;
