@@ -7,6 +7,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 const { authenticateToken } = require('./middleware/authMiddleware');
 const { initializeSocket } = require('./socket/socketHandler');
 
@@ -35,6 +36,7 @@ const io = socketIo(server, {
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', authenticateToken, patientRoutes);
 app.use('/api/doctors', authenticateToken, doctorRoutes);
+app.use('/api/chat', authenticateToken, chatRoutes);
 
 // Socket.io initialization
 initializeSocket(io);
